@@ -48,6 +48,10 @@ cp -r skills/powershell-windows .claude/skills/powershell-windows
 | [python-architecture](skills/python-architecture/) | Python project structure and design patterns | src-layout, SOLID, domain modeling, repository pattern, service layer, dependency injection, configuration, testing patterns |
 | [regression-check](skills/regression-check/) | Verify shipped features still exist via a feature manifest | feature-manifest.json, export/pattern checks, halt-on-regression, optional shell script |
 | [post-deployment](skills/post-deployment/) | Post-deploy structural checks + interactive smoke test | file/canonical/git verification, functional smoke test, blocker-only reporting |
+| [git-branching](skills/git-branching/) | Branch-vs-main decisions, naming, merge strategy, optional branch-and-PR policy | feature-branch criteria, naming convention, squash/regular merge, post-merge cleanup, worktree-policy enforcement, refusal protocol |
+| [worktree-management](skills/worktree-management/) | Isolated git worktree workflow for branch work | .worktrees/ gitignore guard, project-local worktrees, dependency auto-install, clean-baseline tests, post-merge cleanup |
+| [safe-commit](skills/safe-commit/) | Pre-commit verification gate | branch check, stray-commit detection, file-integrity, secret scan, optional local-model review, test run, push |
+| [prompt-engineering](skills/prompt-engineering/) | Session-handoff prompt files and model-tier selection | @-file invocation, Haiku/Sonnet/Opus tiers, filename convention, prompt-file contents |
 
 ## Contributing
 
