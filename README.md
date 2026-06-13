@@ -45,6 +45,7 @@ cp skills/powershell-windows/SKILL.md .claude/skills/powershell-windows/SKILL.md
 | Skill | Description | Key Topics |
 |-------|-------------|------------|
 | [powershell-windows](skills/powershell-windows/) | Production PowerShell patterns for Windows | Advanced functions, OutputType, splatting, tab completion, structured logging, Task Scheduler, PSScriptAnalyzer, error handling, encoding |
+| [web-research](skills/web-research/) | Multi-source web research with citation discipline | Tiered search (Tavily + Exa), Firecrawl scrape, WebFetch fallback, query decomposition, source triage, cross-source triangulation, dated citations |
 
 ## Contributing
 

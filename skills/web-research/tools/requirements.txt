@@ -1,0 +1,2 @@
+tavily-python>=0.5.0
+exa-py>=1.0.0
