@@ -21,8 +21,7 @@ Copy the skill folder to your global Claude Code config:
 Example:
 
 ```bash
-mkdir -p ~/.claude/skills/powershell-windows
-cp skills/powershell-windows/SKILL.md ~/.claude/skills/powershell-windows/SKILL.md
+cp -r skills/powershell-windows ~/.claude/skills/powershell-windows
 ```
 
 ### Per-Project
@@ -36,8 +35,7 @@ Copy the skill folder into your project's `.claude` directory:
 Example:
 
 ```bash
-mkdir -p .claude/skills/powershell-windows
-cp skills/powershell-windows/SKILL.md .claude/skills/powershell-windows/SKILL.md
+cp -r skills/powershell-windows .claude/skills/powershell-windows
 ```
 
 ## Available Skills
@@ -46,6 +44,10 @@ cp skills/powershell-windows/SKILL.md .claude/skills/powershell-windows/SKILL.md
 |-------|-------------|------------|
 | [powershell-windows](skills/powershell-windows/) | Production PowerShell patterns for Windows | Advanced functions, OutputType, splatting, tab completion, structured logging, Task Scheduler, PSScriptAnalyzer, error handling, encoding |
 | [web-research](skills/web-research/) | Multi-source web research with citation discipline | Tiered search (Tavily + Exa), Firecrawl scrape, WebFetch fallback, query decomposition, source triage, cross-source triangulation, dated citations |
+| [python-core](skills/python-core/) | Modern Python 3.10+ standards and Pythonic patterns | Type hints, dataclasses, decorators, generators, context managers, error handling, async, logging, naming, docstrings |
+| [python-architecture](skills/python-architecture/) | Python project structure and design patterns | src-layout, SOLID, domain modeling, repository pattern, service layer, dependency injection, configuration, testing patterns |
+| [regression-check](skills/regression-check/) | Verify shipped features still exist via a feature manifest | feature-manifest.json, export/pattern checks, halt-on-regression, optional shell script |
+| [post-deployment](skills/post-deployment/) | Post-deploy structural checks + interactive smoke test | file/canonical/git verification, functional smoke test, blocker-only reporting |
 
 ## Contributing
 
