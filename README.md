@@ -55,6 +55,7 @@ cp -r skills/powershell-windows .claude/skills/powershell-windows
 | [api-governance](skills/api-governance/) | Cost discipline for outbound AI/API calls + model-tier selection | pre-call cascade (MCP/REST/cache), Haiku/Sonnet/Opus tiers, THINK-vs-DO heuristic, model-tier declaration |
 | [hunt](skills/hunt/) | Parallel hypothesis-driven bug investigation | decompose into hypotheses, parallel read-only agents, ranked synthesis, falsification test, optional worktree fix |
 | [subagent-coordinator](skills/subagent-coordinator/) | Protocol for delegating multi-file work to subagents | PLAN/EXECUTE/VERIFY/REVIEW/COMMIT, structured contracts, clean-checkout smoke gate, coordinator-owned commits |
+| [skill-creator](skills/skill-creator/) | Author new skills and refactor existing ones into a modular shape | Capture-Intent checklist, thin-SKILL.md + references/ structure, frontmatter rules, decomposition heuristics, token-cost model, eval cases |
 
 ## Contributing
 
