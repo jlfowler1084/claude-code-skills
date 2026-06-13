@@ -52,6 +52,9 @@ cp -r skills/powershell-windows .claude/skills/powershell-windows
 | [worktree-management](skills/worktree-management/) | Isolated git worktree workflow for branch work | .worktrees/ gitignore guard, project-local worktrees, dependency auto-install, clean-baseline tests, post-merge cleanup |
 | [safe-commit](skills/safe-commit/) | Pre-commit verification gate | branch check, stray-commit detection, file-integrity, secret scan, optional local-model review, test run, push |
 | [prompt-engineering](skills/prompt-engineering/) | Session-handoff prompt files and model-tier selection | @-file invocation, Haiku/Sonnet/Opus tiers, filename convention, prompt-file contents |
+| [api-governance](skills/api-governance/) | Cost discipline for outbound AI/API calls + model-tier selection | pre-call cascade (MCP/REST/cache), Haiku/Sonnet/Opus tiers, THINK-vs-DO heuristic, model-tier declaration |
+| [hunt](skills/hunt/) | Parallel hypothesis-driven bug investigation | decompose into hypotheses, parallel read-only agents, ranked synthesis, falsification test, optional worktree fix |
+| [subagent-coordinator](skills/subagent-coordinator/) | Protocol for delegating multi-file work to subagents | PLAN/EXECUTE/VERIFY/REVIEW/COMMIT, structured contracts, clean-checkout smoke gate, coordinator-owned commits |
 
 ## Contributing
 
