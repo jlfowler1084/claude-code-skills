@@ -55,7 +55,29 @@ cp -r skills/powershell-windows .claude/skills/powershell-windows
 | [api-governance](skills/api-governance/) | Cost discipline for outbound AI/API calls + model-tier selection | pre-call cascade (MCP/REST/cache), Haiku/Sonnet/Opus tiers, THINK-vs-DO heuristic, model-tier declaration |
 | [hunt](skills/hunt/) | Parallel hypothesis-driven bug investigation | decompose into hypotheses, parallel read-only agents, ranked synthesis, falsification test, optional worktree fix |
 | [subagent-coordinator](skills/subagent-coordinator/) | Protocol for delegating multi-file work to subagents | PLAN/EXECUTE/VERIFY/REVIEW/COMMIT, structured contracts, clean-checkout smoke gate, coordinator-owned commits |
+| [packet-capture](skills/packet-capture/) | Multi-platform packet capture (Windows pktmon/netsh, ESXi/vCenter, Cisco Meraki) analyzed in Wireshark — capture remotely, analyze locally | pktmon, netsh trace, etl2pcapng, pktcap-uw, tcpdump-uw, sshdump, Meraki Dashboard, safety gate, filter cookbook, analysis workflow |
 | [skill-creator](skills/skill-creator/) | Author new skills and refactor existing ones into a modular shape | Capture-Intent checklist, thin-SKILL.md + references/ structure, frontmatter rules, decomposition heuristics, token-cost model, eval cases |
+
+## Multi-Agent Install
+
+The repo includes `install.ps1` which mirrors the `packet-capture` skill into each supported AI agent's skills directory. To install for all agents:
+
+```powershell
+pwsh ./install.ps1 -Targets Claude,Codex,Gemini,Qwen
+```
+
+`-Targets` defaults to all four agents. `-Root` defaults to `$HOME` (override for testing, e.g. `-Root C:\tmp\test`).
+
+### Per-agent skill paths
+
+| Agent | Global skills path |
+|-------|-------------------|
+| Claude Code | `~/.claude/skills` |
+| Codex CLI | `~/.agents/skills` |
+| Gemini CLI | `~/.gemini/skills` |
+| Qwen Code | `~/.qwen/skills` |
+
+Capture files (`*.pcap`, `*.pcapng`, `*.etl`, `*.cap`, `captures/`) and per-machine `local-context.md` files are gitignored and will never be committed to this repo.
 
 ## Contributing
 

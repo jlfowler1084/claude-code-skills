@@ -1,0 +1,6 @@
+interface:
+  display_name: "Packet Capture"
+  short_description: "Multi-platform packet capture, analyzed in Wireshark"
+  default_prompt: "Help capture and analyze packets across Windows, ESXi/vCenter, and Meraki without installing software on remote hosts; keep captures safe and bounded."
+policy:
+  allow_implicit_invocation: true
