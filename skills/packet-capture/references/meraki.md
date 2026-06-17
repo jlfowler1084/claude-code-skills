@@ -26,6 +26,7 @@ Navigate to **Network-wide > Monitor > Packet capture**.
 > **MR (wireless access points — current firmware):** The MR uses
 > **Network-wide > Monitor > Intelligent Capture** rather than the standard Packet
 > Capture page. Navigate there for wireless captures.
+> An MR access point can only decrypt traffic on its own BSSID; traffic to/from other APs appears encrypted.
 
 ### Dashboard capture timeouts
 

@@ -51,13 +51,14 @@ Minimize how much you capture and for how long.
   Trigger the specific failure once, then stop.
 
 - **Hard caps — always set at least one:**
-  - Packet count: `-c <N>` (pktmon uses `--pkt-size`; pktcap-uw uses `-c`; tcpdump uses `-c`)
+  - Packet count: `-c <N>` (pktcap-uw and tcpdump use `-c`). pktmon has no packet-count cap — bound it with a scheduled `pktmon stop` or a capture filter.
   - File size: `maxSize=<MB>` (netsh trace) or `-G <seconds>` with `-W <files>` rolling ring buffer (tcpdump/tshark)
   - Time: schedule a `pktmon stop` or `tcpdump` timeout if interactive stop is not guaranteed
 
 - **Snaplen reduction** — use only when headers alone suffice (e.g. routing/ARP diagnosis).
   Setting `-s 68` or similar will save space but destroys application-layer evidence.
-  For auth and application issues, always use `-s 0` (full frame).
+  For auth and application issues, always use `-s 0` (full frame). For pktmon, the
+  equivalent is `--pkt-size 0` (default 128 truncates payloads).
 
 ---
 

@@ -60,7 +60,7 @@ cp -r skills/powershell-windows .claude/skills/powershell-windows
 
 ## Multi-Agent Install
 
-The repo includes `install.ps1` which mirrors any skill into the global skills directory for each supported AI agent. To install all skills for all agents:
+The repo includes `install.ps1` which mirrors the `packet-capture` skill into each supported AI agent's skills directory. To install for all agents:
 
 ```powershell
 pwsh ./install.ps1 -Targets Claude,Codex,Gemini,Qwen

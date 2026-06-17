@@ -47,7 +47,9 @@ pktcap-uw --uplink <vmnicX> \
 - `-c 1000` — stop after 1,000 packets (always bound with `-c` or `-G` to prevent runaway captures).
 - `-o /vmfs/volumes/<datastore>/…` — write to a real VMFS datastore, not the ESXi ramdisk.
 
-`--dir 2` can also be added to capture both directions explicitly.
+`UplinkSndKernel,UplinkRcvKernel` already covers both TX and RX at the uplink —
+`--dir 2` is not needed here. Use `--dir 2` when capturing at a vmkernel interface
+or switchport where both directions are not already selected by the `--capture` pair.
 
 ### 4. Capture at a switchport (VM vNIC or vmk port)
 
@@ -215,7 +217,7 @@ ssh root@<VCSA> "tcpdump -i eth0 -s 0 -U -w - not port 22" \
 | 4 | `tcpdump-uw` can **only** bind vmkernel interfaces (`vmkN`). It cannot capture uplinks or switchports — use `pktcap-uw` for those. |
 | 5 | SSH is **off by default** on ESXi and raises a host warning when enabled. Disable it immediately after the capture session. |
 | 6 | Write to a **real VMFS datastore**, not the ESXi ramdisk (`/tmp` on ESXi is RAM-backed and small). |
-| 7 | `--dir 2` captures both TX and RX directions; default may be unidirectional depending on the capture point. |
+| 7 | `--dir 2` captures both TX and RX; use it for vmk/switchport captures that need both directions. For uplink captures, `UplinkSndKernel,UplinkRcvKernel` already covers both directions — `--dir 2` is redundant there. |
 | 8 | **VCSA lands in `appliancesh`** on SSH login. Type `shell` to reach the Photon OS bash shell where `tcpdump` lives. |
 | 9 | Always exclude your SSH session from live pipes: `not port 22`. Otherwise the pcap-data SSH stream captures itself and spirals. |
 | 10 | `/tmp` on VCSA may be tmpfs (RAM). Use a BPF filter to keep captures small and delete the file when done. |

@@ -128,7 +128,7 @@ etl2pcapng parses the `.etl` file directly — no live session or remote connect
 - **`etl2pcap` is lossy.** The conversion discards pktmon metadata. Dropped packets are excluded from the default output unless you add `--drop-only`.
 - **`--comp all` duplicates packets.** The default records every packet at every stack layer. Use `--comp nics` to capture once at the NIC and avoid noise.
 - **Filters persist across runs.** Always run `pktmon filter remove` between captures to start clean.
-- **Elevation is required locally AND remotely.** UAC token filtering can strip admin rights from domain accounts in remote sessions — use a domain admin or the built-in Administrator account for `Invoke-Command`.
+- **Elevation is required locally AND remotely.** UAC token filtering can strip admin rights from LOCAL accounts in remote sessions — use a domain admin or the built-in Administrator account for `Invoke-Command`.
 - **Default log mode is circular at 512 MB.** Use `--file-name` and monitor size for long captures.
 - **Wireshark 3.x+ can open raw `.etl` directly**, but `etl2pcap` is the documented conversion path and is more reliable.
 - **`pktmon pcapng` is the legacy verb** on older builds — if `etl2pcap` is not recognized, try `pktmon pcapng` and check your OS build with `winver`.

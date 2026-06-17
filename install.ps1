@@ -12,7 +12,8 @@
         Gemini  ->  <Root>/.gemini/skills/packet-capture/
         Qwen    ->  <Root>/.qwen/skills/packet-capture/
 
-    The operation is idempotent: re-running overwrites any previously installed files.
+    The operation is idempotent: re-running removes any previously installed copy and
+    replaces it cleanly, preventing nested directories from accumulating.
     The canonical source is always `<script dir>/skills/packet-capture`.
 
 .PARAMETER Targets
@@ -99,7 +100,10 @@ foreach ($target in $Targets) {
         }
     }
     else {
-        # Plain recursive copy (idempotent via -Force)
+        # Remove existing destination before copying to prevent nesting on re-run
+        if (Test-Path $destPath) {
+            Remove-Item $destPath -Recurse -Force
+        }
         Copy-Item -Path $sourcePath -Destination $destPath -Recurse -Force
         Write-Host "[OK]   $target installed: $destPath"
     }

@@ -8,6 +8,11 @@ Replace placeholder tokens with your environment values:
 - `<TARGET-IP>` — the IP address of the host you are investigating
 - `<SUBNET>` — a CIDR subnet, e.g. `10.0.20.0/24`
 - `<MAC>` — a MAC address, e.g. `aa:bb:cc:dd:ee:ff`
+- `<WAN-IP>` — the public/NAT IP on the router's external interface
+- `<INTERNAL-SUBNET>` — the LAN-side subnet in CIDR notation, e.g. `10.0.0.0/8`
+- `<VLAN-ID>` — the 802.1Q VLAN number, e.g. `20`
+- `<SRC-SUBNET-START>` / `<SRC-SUBNET-END>` — first and last host IP of the source subnet
+- `<DST-SUBNET-START>` / `<DST-SUBNET-END>` — first and last host IP of the destination subnet
 
 ---
 
@@ -164,10 +169,10 @@ tcp.stream eq 0
 ### BPF Capture Filters
 ```
 # TCP RST packets
-tcp[13] & 4 == 4
+(tcp[13] & 4) == 4
 
 # TCP SYN packets
-tcp[13] & 2 == 2
+(tcp[13] & 2) == 2
 
 # Specific host — all TCP
 tcp and host <TARGET-IP>
@@ -426,6 +431,10 @@ netsh trace start capture=yes report=disabled \
 # Combine with AND: IPv4.Address=<IP> and TCP.DestinationPort=<PORT>
 # Full filter help: netsh trace show CaptureFilterHelp
 ```
+
+> **Note:** The `Protocol.Value=...`, `TCP.DestinationPort=...`, and `UDP.DestinationPort=...`
+> filter forms used in the table above come from `netsh trace show CaptureFilterHelp`
+> — the documented command — not from informal research notes.
 
 ---
 
