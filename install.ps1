@@ -32,6 +32,11 @@
     Falls back to a full copy with a warning if the symlink cannot be created
     (e.g. missing privilege or unsupported file system).
 
+    Symlink installs keep local-context.md in the source skill dir (reachable through the
+    junction). To avoid data loss, -Symlink will SKIP (not convert) a target that already
+    has a copied install holding a customized local-context.md; move that file into the
+    source dir first, then re-run with -Symlink.
+
 .EXAMPLE
     pwsh ./install.ps1
     # Installs into all four agent directories under $HOME.
@@ -128,6 +133,18 @@ foreach ($target in $Targets) {
     }
 
     if ($Symlink) {
+        # Data-loss guard: a copied install stores the user's local-context.md as a real
+        # file inside $destPath. Converting it to a junction would delete that file. Refuse
+        # this target and tell the user to move it into the source dir (where symlink
+        # installs keep it). A junction destination (re-symlink) is safe and proceeds.
+        if (Test-Path $destPath) {
+            $destItem  = Get-Item -LiteralPath $destPath -Force
+            $isReparse = [bool]($destItem.Attributes -band [System.IO.FileAttributes]::ReparsePoint)
+            if (-not $isReparse -and (Test-Path (Join-Path $destPath 'local-context.md'))) {
+                Write-Warning "[SKIP] $target has a copied install with a customized local-context.md at $destPath. Switching to -Symlink would delete it. Move that local-context.md into the source dir ($sourcePath) first, then re-run with -Symlink. Skipping $target."
+                continue
+            }
+        }
         try {
             Remove-InstalledPath -Path $destPath
             New-Item -ItemType Junction -Path $destPath -Target $sourcePath -Force | Out-Null
