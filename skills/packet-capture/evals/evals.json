@@ -1,0 +1,79 @@
+{
+  "skill_name": "packet-capture",
+  "eval_type": "manual",
+  "evals": [
+    {
+      "id": "server-2019-pktmon",
+      "name": "Windows Server 2022 — pktmon HTTP capture",
+      "prompt": "Capture HTTP traffic on a Windows Server 2022 box without installing Wireshark. I need to see the full payload.",
+      "context": "Server 2022 is fully patched. WinRM is enabled. You have local admin access. No Wireshark or third-party tools installed on the server.",
+      "expectations": [
+        "Recommends pktmon (not netsh trace) because the target is Server 2022 (pktmon in-box since Server 2019)",
+        "Instructs adding a pktmon filter for port 80 before starting the capture",
+        "Uses --pkt-size 0 flag to capture full packet payloads (not the default 128-byte truncation)",
+        "Converts the ETL output using 'pktmon etl2pcap' on the server or laptop",
+        "Includes a step to copy the pcapng file to the analyst laptop for Wireshark analysis",
+        "Mentions the authorization/safety gate: confirm you are authorized to capture on this host before starting"
+      ]
+    },
+    {
+      "id": "server-2016-netsh",
+      "name": "Windows Server 2016 — netsh trace fallback",
+      "prompt": "Same task: capture HTTP traffic on a Windows Server 2016 box without installing Wireshark.",
+      "context": "Server 2016 is fully patched. WinRM is enabled. You have local admin access. No Wireshark or third-party tools installed on the server.",
+      "expectations": [
+        "Recognizes that pktmon is NOT available on Server 2016 and falls back to netsh trace",
+        "Uses 'netsh trace start capture=yes report=disabled' with appropriate flags",
+        "Adds an optional capture filter (e.g. IPv4.Address or TCP.Port) to scope the trace",
+        "Advises stopping with 'netsh trace stop' and retrieving only the .etl file (not the .cab)",
+        "Instructs converting the ETL to pcapng on the analyst laptop using etl2pcapng.exe (not on the server)",
+        "References the etl2pcapng GitHub release for the binary"
+      ]
+    },
+    {
+      "id": "esxi-uplink",
+      "name": "ESXi uplink capture with pktcap-uw",
+      "prompt": "I need to see all traffic on an ESXi host's uplink (physical NIC). The host is managed by vCenter. Show me how to capture without installing anything extra.",
+      "context": "ESXi 8.0 host. SSH is currently disabled (default). You have root credentials. A datastore is available for writing capture files.",
+      "expectations": [
+        "Instructs enabling SSH on the ESXi host before starting (via vSphere Client, DCUI, or vim-cmd hostsvc/enable_ssh)",
+        "Uses 'net-stats -l' or equivalent to identify the correct uplink port number and vmnic name",
+        "Uses pktcap-uw --uplink <vmnicX> with UplinkSndKernel,UplinkRcvKernel (no spaces in the capture list)",
+        "Includes -s 0 for full snaplen and -c <count> to bound the capture",
+        "Writes output to a real datastore path (not the ESXi ramdisk)",
+        "Provides the kill recipe (lsof | grep pktcap-uw or pkill pktcap-uw) to stop a runaway capture",
+        "Mentions the option to live-pipe to Wireshark via SSH as a community pattern (not officially documented)"
+      ]
+    },
+    {
+      "id": "vcsa-tcpdump",
+      "name": "vCenter appliance (VCSA) — tcpdump on Photon OS",
+      "prompt": "I need to capture packets on the vCenter Server Appliance management NIC to debug a connectivity issue between vCenter and an ESXi host.",
+      "context": "VCSA 8.0 (Photon OS). SSH is currently disabled. You have root credentials via VAMI. The analyst laptop has Wireshark installed.",
+      "expectations": [
+        "Recommends tcpdump (not pktcap-uw, which is ESXi-only and not present on VCSA)",
+        "Instructs enabling SSH via VAMI https://<VCSA>:5480 or using 'ssh.set --enabled true' in appliancesh",
+        "Notes that SSH lands in restricted appliancesh and user must type 'shell' to get a bash prompt",
+        "Uses 'tcpdump -i eth0 -s 0 -w /tmp/<filename>.pcap' with a BPF filter to bound the capture",
+        "Includes 'not port 22' in the filter when running a live pipe to avoid capturing the SSH control session",
+        "Shows how to copy the file to the laptop with scp",
+        "Mentions Wireshark sshdump extcap as an alternative to the manual SSH pipe",
+        "Reminds user to disable SSH on VCSA when the capture is complete"
+      ]
+    },
+    {
+      "id": "meraki-east-west",
+      "name": "Meraki — east-west capture on MS switch (same VLAN)",
+      "prompt": "Two clients on the same VLAN behind a Meraki MS switch can't talk to each other. I need to capture their traffic to debug it.",
+      "context": "Meraki MS switch managed via Dashboard. There is also an MX security appliance as the upstream router. Both clients are on the same VLAN and subnet.",
+      "expectations": [
+        "Recommends capturing at the MS switch (not the MX), because the MX cannot see LAN-to-LAN switched traffic",
+        "Directs the user to Dashboard Network-wide > Monitor > Packet capture, selecting the MS and relevant interface",
+        "Specifies setting Output to 'Download .pcap file (for Wireshark)' rather than the live browser stream",
+        "Alternatively suggests configuring a SPAN / port mirror on the MS: Switch > Monitor > Switch ports > Mirror",
+        "Explicitly notes the fidelity caveat: Dashboard captures are not guaranteed 100% under load",
+        "Notes that live-streaming to Wireshark is not officially supported via Dashboard"
+      ]
+    }
+  ]
+}
