@@ -5,3 +5,11 @@ Thumbs.db
 # Python build artifacts
 __pycache__/
 *.pyc
+
+# packet-capture skill: never commit captures or per-machine context
+*.pcap
+*.pcapng
+*.etl
+*.cap
+captures/
+**/local-context.md
