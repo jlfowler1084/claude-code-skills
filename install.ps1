@@ -12,9 +12,12 @@
         Gemini  ->  <Root>/.gemini/skills/packet-capture/
         Qwen    ->  <Root>/.qwen/skills/packet-capture/
 
-    The operation is idempotent: re-running removes any previously installed copy and
-    replaces it cleanly, preventing nested directories from accumulating.
-    The canonical source is always `<script dir>/skills/packet-capture`.
+    The operation is idempotent: re-running replaces the canonical skill files cleanly
+    (no nested packet-capture/packet-capture directories accumulate) while PRESERVING a
+    user-created local-context.md in the installed directory across reinstalls/updates.
+    That protects the per-machine customization the skill instructs users to create next
+    to local-context.template.md. The canonical source is always
+    `<script dir>/skills/packet-capture`.
 
 .PARAMETER Targets
     One or more agents to install into. Accepts any combination of Claude, Codex, Gemini,
@@ -54,6 +57,48 @@ param (
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+# ---- Helpers ----------------------------------------------------------------
+
+# Remove an installed path safely. If it is a reparse point (junction/symlink), delete
+# ONLY the link so we never recurse into and destroy the target's contents (which could
+# be the source repository clone).
+function Remove-InstalledPath {
+    param([Parameter(Mandatory)][string] $Path)
+    if (-not (Test-Path $Path)) { return }
+    $item = Get-Item -LiteralPath $Path -Force
+    if ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) {
+        [System.IO.Directory]::Delete($Path, $false)
+    }
+    else {
+        Remove-Item -LiteralPath $Path -Recurse -Force
+    }
+}
+
+# Copy the skill into $Dest, preserving a user-created local-context.md across reinstall.
+# The destination is replaced cleanly to avoid nested directories, but the user's
+# per-machine customization file is stashed and restored.
+function Copy-SkillPreservingContext {
+    param(
+        [Parameter(Mandatory)][string] $Source,
+        [Parameter(Mandatory)][string] $Dest
+    )
+    $preserved = $null
+    $existingContext = Join-Path $Dest 'local-context.md'
+    if (Test-Path $existingContext) {
+        $preserved = Join-Path ([System.IO.Path]::GetTempPath()) ("pc-localctx-" + [guid]::NewGuid().ToString() + ".md")
+        Copy-Item -LiteralPath $existingContext -Destination $preserved -Force
+    }
+
+    Remove-InstalledPath -Path $Dest
+    Copy-Item -Path $Source -Destination $Dest -Recurse -Force
+
+    if ($preserved) {
+        Copy-Item -LiteralPath $preserved -Destination (Join-Path $Dest 'local-context.md') -Force
+        Remove-Item -LiteralPath $preserved -Force
+        Write-Host "[KEEP] $Dest local-context.md preserved across reinstall"
+    }
+}
+
 # ---- Resolve canonical source -----------------------------------------------
 $sourcePath = Join-Path $PSScriptRoot 'skills' 'packet-capture'
 
@@ -72,39 +117,30 @@ $agentMap = [ordered]@{
 
 # ---- Install per target ------------------------------------------------------
 foreach ($target in $Targets) {
-    $relPath     = $agentMap[$target]
-    $skillsDir   = Join-Path $Root $relPath
-    $destPath    = Join-Path $skillsDir 'packet-capture'
+    $relPath   = $agentMap[$target]
+    $skillsDir = Join-Path $Root $relPath
+    $destPath  = Join-Path $skillsDir 'packet-capture'
 
     Write-Host "[INFO] $target -> $destPath"
 
-    # Ensure the parent skills directory exists
     if (-not (Test-Path $skillsDir)) {
         New-Item -ItemType Directory -Path $skillsDir -Force | Out-Null
     }
 
     if ($Symlink) {
-        # Try to create a directory junction; fall back to copy on failure
         try {
-            # Remove existing destination if present (required before New-Item junction)
-            if (Test-Path $destPath) {
-                Remove-Item $destPath -Recurse -Force
-            }
+            Remove-InstalledPath -Path $destPath
             New-Item -ItemType Junction -Path $destPath -Target $sourcePath -Force | Out-Null
             Write-Host "[OK]   $target symlink created: $destPath -> $sourcePath"
         }
         catch {
             Write-Warning "[WARN] Symlink creation failed for $target ($($_.Exception.Message)). Falling back to copy."
-            Copy-Item -Path $sourcePath -Destination $destPath -Recurse -Force
+            Copy-SkillPreservingContext -Source $sourcePath -Dest $destPath
             Write-Host "[OK]   $target copied (fallback): $destPath"
         }
     }
     else {
-        # Remove existing destination before copying to prevent nesting on re-run
-        if (Test-Path $destPath) {
-            Remove-Item $destPath -Recurse -Force
-        }
-        Copy-Item -Path $sourcePath -Destination $destPath -Recurse -Force
+        Copy-SkillPreservingContext -Source $sourcePath -Dest $destPath
         Write-Host "[OK]   $target installed: $destPath"
     }
 }
